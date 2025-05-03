@@ -27,28 +27,39 @@ pub mod quiz_program {
             num_questions, 
             quiz_topic, 
             time_limit_per_question
-        )
+        )?;
+        Ok(())
     }
 
     pub fn connect_players(ctx: Context<ConnectPlayers>) -> Result<()> {
-        instructions::connect_players::ConnectPlayers::handler(ctx)
+        instructions::connect_players::ConnectPlayers::handler(ctx)?;
+        Ok(())
     }
 
     pub fn initiate_quiz(ctx: Context<InitiateQuiz>, questions: Vec<QuizQuestion>) -> Result<()> {
-        instructions::initiate_quiz::InitiateQuiz::handler(ctx, questions)
+        instructions::initiate_quiz::InitiateQuiz::handler(
+            ctx,
+            questions
+        )?;
+        Ok(())
     }
 
     pub fn present_answer(ctx: Context<PresentAnswer>, answer_index: u8, timestamp: i64) -> Result<()> {
-        instructions::present_answer::PresentAnswer::handler(ctx, answer_index, timestamp)
+        instructions::present_answer::PresentAnswer::handler(
+            ctx,
+            answer_index, 
+            timestamp
+        )?;
+        Ok(())
     }
 
     pub fn scatter_rewards(ctx: Context<ScatterRewards>) -> Result<()> {
-        instructions::scatter_rewards::ScatterRewards::handler(ctx)
+        instructions::scatter_rewards::ScatterRewards::handler(ctx)?;
+        Ok(())
     }
 
     pub fn withdraw_quiz(ctx: Context<WithdrawQuiz>) -> Result<()> {
-        instructions::withdraw_quiz::WithdrawQuiz::handler(ctx)
+        instructions::withdraw_quiz::WithdrawQuiz::handler(ctx)?;
+        Ok(())
     }
 }
-
-
