@@ -6,7 +6,7 @@ resolution = true
 skip-lint = false
 
 [programs.localnet]
-jinai_quiz = "FEhGpWiK38chcHN3Mze7vTzDpPeFB8G9cHeyYBq1ypQ9"
+quiz_program = "Dfvg9Ve4mDkPEsAEkZi44r4Axns1sdHMZQoKNBsJzjYJ"
 
 [registry]
 url = "https://api.apr.dev"

@@ -1,18 +1,14 @@
 use anchor_lang::prelude::*;
 
-// Import state modules
 pub mod state;
-use state::*;
-
-// Import error module 
 pub mod error;
-use error::*;
-
-// Import instruction modules
 pub mod instructions;
+
+use state::*;
+use error::*;
 use instructions::*;
 
-declare_id!("FEhGpWiK38chcHN3Mze7vTzDpPeFB8G9cHeyYBq1ypQ9");
+declare_id!("Dfvg9Ve4mDkPEsAEkZi44r4Axns1sdHMZQoKNBsJzjYJ");
 
 #[program]
 pub mod quiz_program {
