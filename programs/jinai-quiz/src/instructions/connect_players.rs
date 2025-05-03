@@ -36,7 +36,7 @@ impl<'info> ConnectPlayers<'info> {
         let quiz_account = &mut ctx.accounts.quiz_account;
         let player = &ctx.accounts.player;
         
-        // Ensure quiz is in recruiting state
+        // check for recruiting state
         require!(
             quiz_account.status == QuizStatus::Recruiting,
             QuizError::InvalidQuizState
