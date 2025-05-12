@@ -1,23 +1,18 @@
 import * as anchor from "@coral-xyz/anchor";
-import { TOKEN_PROGRAM_ID, createMint } from "@solana/spl-token";
-import { Program, type Provider } from "@coral-xyz/anchor";
+import { TOKEN_PROGRAM_ID } from "@solana/spl-token";
+import { Program } from "@coral-xyz/anchor";
 import { QuizProgram } from "../target/types/quiz_program";
 import { BankrunProvider, startAnchor } from "anchor-bankrun";
-import { SYSTEM_PROGRAM_ID } from "@coral-xyz/anchor/dist/cjs/native/system";
-import { Keypair, SystemProgram } from "@solana/web3.js";
+import { Keypair, PublicKey, SystemProgram } from "@solana/web3.js";
+import { createMint } from "spl-token-bankrun";
+// import { SYSTEM_PROGRAM_ID } from "@coral-xyz/anchor/dist/cjs/native/system";
 
-
-describe("Check whether the quiz is initialized!", () => {
+describe("Check whether the quiz is initialized or appointed!", () => {
   // Configure the client to use the local cluster.
-
-  let secondKeypair: Keypair = new anchor.web3.Keypair();
-
-  const wallet = Keypair.generate();
-  
-  // console.log(wallet);
+  // let secondKeypair: Keypair = new anchor.web3.Keypair();
+  // const wallet = Keypair.generate();
   
   it("Is initialized!", async () => {
-
     const host = Keypair.generate();
     
     const context = await startAnchor("", [], [
@@ -31,36 +26,49 @@ describe("Check whether the quiz is initialized!", () => {
         },
       }
     ]);
+    
     const provider = new BankrunProvider(context); 
     anchor.setProvider(provider);
     
     const program = anchor.workspace.QuizProgram as Program<QuizProgram>;
 
-    const quizAccount = Keypair.generate();
-    const quizTokenAccount = Keypair.generate();
-    const quizMint = Keypair.generate();
+    const [quizAccountPDA, quizAccountBump] = PublicKey.findProgramAddressSync(
+      [
+        Buffer.from("jinai-quiz"),
+        host.publicKey.toBuffer()
+      ],
+      program.programId
+    );
 
+    const [quizTokenAccountPDA, quizTokenAccountBump] = PublicKey.findProgramAddressSync(
+      [
+        Buffer.from("quiz-token-account"),
+        quizAccountPDA.toBuffer()
+      ],
+      program.programId
+    );
+
+    const quizMint = Keypair.generate();
+  
     await createMint(
-      provider.connection,
-      host,
-      host.publicKey,
-      null, 
-      9, 
+      context.banksClient,
+      host,              
+      host.publicKey,      
+      host.publicKey,       
+      9,
       quizMint
     );
   
-    const tx = await program.methods.appointQuiz
-    (
+    const tx = await program.methods.appointQuiz(
       new anchor.BN(1000), 
       10, 
       "AAA Titles", 
       60
     )
-    .accountsPartial
-    ({
+    .accountsPartial({
       host: host.publicKey,
-      quizAccount: quizAccount.publicKey,
-      quizTokenAccount: quizTokenAccount.publicKey,
+      quizAccount: quizAccountPDA,
+      quizTokenAccount: quizTokenAccountPDA,
       quizMint: quizMint.publicKey,
       tokenProgram: TOKEN_PROGRAM_ID,
       systemProgram: SystemProgram.programId,
@@ -68,7 +76,6 @@ describe("Check whether the quiz is initialized!", () => {
     .signers([host])
     .rpc();
 
-    console.log(JSON.stringify(tx));
     console.log("Your transaction signature", tx);
   });
 });
