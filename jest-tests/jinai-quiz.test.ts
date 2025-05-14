@@ -20,7 +20,7 @@ describe("JinAI betting system!", () => {
   let quizMint: Keypair;
   let context: any;
 
-  // Use beforeAll to set up your environment
+  // Using beforeAll from jest to set up test environment
   beforeAll(async () => {
     // Setting up stuff to use through out the test!
     host = Keypair.generate();
@@ -148,4 +148,46 @@ describe("JinAI betting system!", () => {
       throw error;
     }
   });
+
+  it("Check whether quiz is getting initialized or not!", async () => {
+    try {
+      const questions = [
+        {
+          questionText: "What is the name of the main character in the Ghost of Tsushima?",
+          options: [ "Khotun Khan","Jin Sakai", "Yuna", "Taka"],
+          correctAnswerIndex: 1,
+        },
+        {
+          questionText: "What is the primary setting of the game?",
+          options: ["Tsushima Island", "Kyoto", "Tokyo", "Hokkaido"],
+          correctAnswerIndex: 0,
+        },
+        {
+          questionText: "What is the name of Jin's uncle?",
+          options: [ "Khotun Khan","Lord Shimura", "Yuna", "Taka"],
+          correctAnswerIndex: 1,
+        },
+        {
+          questionText: "What is the main theme of the game?",
+          options: ["Honor vs. Sacrifice", "Love vs. Hate", "War vs. Peace", "Life vs. Death"],
+          correctAnswerIndex: 0,
+        }
+      ];
+
+      const tx = await program.methods.initiateQuiz(questions)
+      .accountsPartial({
+        quizAccount: quizAccountPDA,
+        host: host.publicKey,
+        systemProgram: SystemProgram.programId,
+      })
+      .signers([host])
+      .rpc();
+
+      console.log("Your transaction signature for initiating quiz", tx);
+    } catch (error) {
+      console.error("Error initializing quiz:", error);
+      throw error;
+    }
+  })
+
 });
